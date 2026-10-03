@@ -14,11 +14,11 @@ export async function fetchYahooFinanceData(symbol) {
   // In local development Vite proxies Yahoo server-side, avoiding a fragile public CORS proxy.
   // Deployments can set VITE_MARKET_DATA_BASE_URL to their own server-side proxy.
   const marketDataBaseUrl = import.meta.env.VITE_MARKET_DATA_BASE_URL;
-  const url = import.meta.env.DEV
-    ? `/api/yahoo${endpoint}`
-    : marketDataBaseUrl
-      ? `${marketDataBaseUrl.replace(/\/$/, '')}${endpoint}`
-      : `https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com${endpoint}`)}`;
+  // Use the same-origin proxy in both dev and Vercel production. This avoids
+  // depending on a public CORS proxy that can be rate-limited or unavailable.
+  const url = marketDataBaseUrl
+    ? `${marketDataBaseUrl.replace(/\/$/, '')}${endpoint}`
+    : `/api/yahoo${endpoint}`;
 
   try {
     const controller = new AbortController();
