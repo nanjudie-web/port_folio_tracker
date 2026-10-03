@@ -4,9 +4,10 @@
  * and this function forwards it server-side, avoiding browser CORS limits.
  */
 export default async function handler(req, res) {
-  const pathParts = Array.isArray(req.query?.path)
-    ? req.query.path
-    : [req.query?.path].filter(Boolean);
+  const rawPath = req.query?.path;
+  const pathParts = Array.isArray(rawPath)
+    ? rawPath
+    : String(rawPath || '').split('/').filter(Boolean);
 
   if (pathParts.length === 0) {
     res.status(400).json({ error: 'Missing Yahoo Finance path' });
